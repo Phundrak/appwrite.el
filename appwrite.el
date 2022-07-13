@@ -298,17 +298,17 @@ ANTIVIRUS, check `appwrite--storage-update-bucket'."
                                    :encryption encryption
                                    :antivirus antivirus))
 
-(cl-defun appwrite-storage-list-buckets (&key search (limit 25) offset cursor cursor-direction order-type)
+(cl-defun appwrite-storage-list-buckets (&key search limit offset cursor cursor-direction order-type)
   "List of all storage buckets.
 
 SEARCH is a string to filter the list results when non-nil.  Max
 length of 256 chars.
 
 LIMIT is the maximum amount of buckets returned by the
-query (default value: 25).
+query.  Appwrite defaults at 25.
 
 OFFSET is the results offset with which the user can manage the
-pagination of the results when non-nil.
+pagination of the results when non-nil.  Appwrite defaults at 0.
 
 CURSOR is the id of the bucket used as the starting point of the
 query, excluding the bucket itself.
