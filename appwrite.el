@@ -44,8 +44,8 @@
 (defcustom appwrite-endpoint ""
   "Appwrite endpoint.
 Must not include the API version, e.g.
-\"https://appwrite.example.org\". The variable must not end with
-a trailing forward slash. Setting this variable with
+\"https://appwrite.example.org\".  The variable must not end with
+a trailing forward slash.  Setting this variable with
 `customize-set-variable' takes care of it automatically."
   :group 'appwrite
   :type 'string
@@ -78,9 +78,8 @@ in the else branch is the definition of `plistp' in Emacs 29."
 (defun appwrite--get-full-url (api)
   "Get the full url for API.
 If API does not begin with an initial forward slash, add it
-automatically.
-
-If it does not contain an API version, prefix \"/v1\" by default."
+automatically.  If it does not contain an API version, prefix
+\"/v1\" by default."
   (let ((versionp (string-match-p "^/?v[[:digit:]]+.*" api))
         (initial-forward-slash-p (string-prefix-p "/" api)))
     (concat appwrite-endpoint
@@ -103,9 +102,9 @@ This will show a message in the modeline in this format:
   "In case of failure when calling the Appwrite API, display MESSAGE.
 The function considers a call to the API a failure in case the
 HTTP status code in RESPONSE differs from SUCCESS-STATUS, the
-HTTP status code hoped for. If that’s the case, warn the user,
-see `appwrite--message-failure'. Else, return the JSON returned
-by the API."
+HTTP status code hoped for.  If that’s the case, warn the user,
+see `appwrite--message-failure', else return the JSON returned by
+the API."
   (let ((status (car response))
         (json (cdr response)))
     (if (= status success-status)
@@ -134,10 +133,10 @@ automatic conversion depending on its type.
 
 If ASYNCP is t, `appwrite--post-api' will be asynchronous.
 CALLBACK must then be set as it will be called once the request
-finishes. See `url-retrieve'.
+finishes.  See `url-retrieve'.
 
 The function returns a pair composed of the HTTP status code as
-its car. The cdr is a hash table from the response answer if
+its car.  The cdr is a hash table from the response answer if
 Content-Type in the headers is \"application/json\"."
   (let* ((url (appwrite--get-full-url api))
          (url-request-method method)
@@ -196,7 +195,7 @@ Content-Type in the headers is \"application/json\"."
 Create bucket named NAME with id ID.
 
 PERMISSION is the permissioin type model to use for reading files
-in this bucket. By default, PERMISSION is \"bucket\". For more
+in this bucket.  By default, PERMISSION is \"bucket\". For more
 info, see https://appwrite.io/docs/permissions
 
 READ is an array of roles for read permissions.
@@ -241,7 +240,7 @@ than 20MB are skipped. t by default."
 (cl-defun appwrite-storage-list-buckets (&key search (limit 25) offset cursor cursor-direction order-type)
   "List of all storage buckets.
 
-SEARCH is a string to filter the list results when non-nil. Max
+SEARCH is a string to filter the list results when non-nil.  Max
 length of 256 chars.
 
 LIMIT is the maximum amount of buckets returned by the
@@ -258,7 +257,7 @@ CURSOR-DIRECTION can be either \\='after or \\='before.
 ORDER-TYPE can be either \\='ascending or \\='descending.
 
 If the query is successful, return a hash table made from the
-acquired JSON. Otherwise, return nil and warn the user."
+acquired JSON.  Otherwise, return nil and warn the user."
   (let (payload)
     (when search (setq payload (append payload `(search ,search))))
     (setq payload (append payload `(limit ,limit)))
