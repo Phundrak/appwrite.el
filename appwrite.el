@@ -204,4 +204,3 @@ than 20MB are skipped. t by default."
 
 (provide 'appwrite)
 ;;; appwrite.el ends here
-
