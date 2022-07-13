@@ -6,8 +6,9 @@
 ~appwrite.el~ is a server SDK for [[https://appwrite.io/][Appwrite]], a self-hosted
 backend-as-a-service platform.
 
-* Table of Contents                                                :TOC_2_gh:
+* Table of contents                                                :TOC_2_gh:
 - [[#introduction][Introduction]]
+- [[#how-complete-is-this-sdk-anyways][How complete is this SDK anyways?]]
 - [[#installation][Installation]]
   - [[#manual-installation][Manual Installation]]
   - [[#straight--use-package][Straight + use-package]]
@@ -15,8 +16,13 @@ backend-as-a-service platform.
 - [[#contributing][Contributing]]
 - [[#license][License]]
 
-* Installation
+* How complete is this SDK anyways?
+~appwrite.el~ is currently in its infancy, so don’t expect yet most of
+the functionalities to be available. If you want to see a detailed
+view of the parity between this library and the server API, check out
+the [[file:TODOs.org][TODOs]] file in this repository.
 
+* Installation
 ** Manual Installation
 To manually install ~appwrite.el~, clone the repository wherever you
 want, then put the path to the repository in your ~load-path~. You can

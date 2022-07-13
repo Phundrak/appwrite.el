@@ -1,0 +1,150 @@
+* TODO Implement API [0/8]
+** TODO Accounts [0/20]
+*** TODO Get Account
+*** TODO Get Account Preferences
+*** TODO Get Account Sessions
+*** TODO Get Account Logs
+*** TODO Get Session By ID
+*** TODO Update Account Name
+*** TODO Update Account Password
+*** TODO Update Account Email
+*** TODO Update Account Phone
+*** TODO Update Account Preferences
+*** TODO Update Account Status
+*** TODO Delete Account Session
+*** TODO Update Session (Refresh Tokens)
+*** TODO Delete All Account Sessions
+*** TODO Create Password Recovery
+*** TODO Create Password Recovery (confirmation)
+*** TODO Create Email Verification
+*** TODO Create Email Verification (confirmation)
+*** TODO Create Phone Verification
+*** TODO Create Phone Verification (confirmation)
+
+** TODO Users [0/18]
+*** TODO Create User
+*** TODO List Users
+*** TODO Get User
+*** TODO Get User Preferences
+*** TODO Get User Sessions
+*** TODO Get User Memberships
+*** TODO Get User Logs
+*** TODO Update User Status
+*** TODO Update Email Verification
+*** TODO Update Phone Verification
+*** TODO Update Name
+*** TODO Update Password
+*** TODO Update Email
+*** TODO Update Phone
+*** TODO Update User Preferences
+*** TODO Delete User Session
+*** TODO Delete User Sessions
+*** TODO Delete User
+
+** TODO Teams [0/11]
+*** TODO Create Team
+*** TODO List Teams
+*** TODO Get Team
+*** TODO Update Team
+*** TODO Delete Team
+*** TODO Create Team Membership
+*** TODO Get Team Memberships
+*** TODO Get Team Membership
+*** TODO Update Membership Roles
+*** TODO Update Team Membership Status
+*** TODO Delete Team Membership
+
+** TODO Databases [0/30]
+*** TODO Create Database
+*** TODO List Databases
+*** TODO Get Database
+*** TODO Update Database
+*** TODO Delete Database
+*** TODO Create Collection
+*** TODO List Collections
+*** TODO Get Collection
+*** TODO Update Collection
+*** TODO Delete Collection
+*** TODO Create String Attribute
+*** TODO Create Email Attribute
+*** TODO Create Enum Attribute
+*** TODO Create IP Address Attribute
+*** TODO Create URL Attribute
+*** TODO Create Integer Attribute
+*** TODO Create Float Attribute
+*** TODO Create Boolean Attribute
+*** TODO List Attributes
+*** TODO Get Attribute
+*** TODO Delete Attribute
+*** TODO Create Index
+*** TODO List Indexes
+*** TODO Get Index
+*** TODO Delete Index
+*** TODO Create Document
+*** TODO List Documents
+*** TODO Get Document
+*** TODO Update Document
+*** TODO Delete Document
+
+** TODO Storage [4/13]
+*** DONE Create bucket
+CLOSED: [2022-07-13 Wed 14:28]
+*** DONE List buckets
+CLOSED: [2022-07-13 Wed 15:33]
+*** DONE Get Bucket
+CLOSED: [2022-07-13 Wed 15:34]
+*** TODO Update Bucket
+*** DONE Delete Bucket
+CLOSED: [2022-07-13 Wed 14:28]
+*** TODO Create File
+*** TODO List Files
+*** TODO Get File
+*** TODO Get File Preview
+*** TODO Get File for Download
+*** TODO Get File for View
+*** TODO Update File
+*** TODO Delete File
+
+** TODO Functions [0/15]
+*** TODO Create Function
+*** TODO List Functions
+*** TODO List runtimes
+*** TODO Get Function
+*** TODO Update Function
+*** TODO Update Function Deployment
+*** TODO Delete Function
+*** TODO Create Deployment
+*** TODO List Deployments
+*** TODO Get Deployment
+*** TODO Delete Deployment
+*** TODO Create Execution
+*** TODO List Executions
+*** TODO Get Execution
+*** TODO Retry Build
+
+** TODO Avatars [0/7]
+*** TODO Get Credit Card Icon
+*** TODO Get Browser Icon
+*** TODO Get Country Flag
+*** TODO Get Image from URL
+*** TODO Get Favicon
+*** TODO Get QR Code
+*** TODO Get User Initials
+
+** TODO Health [0/10]
+*** TODO Get HTTP
+*** TODO Get DB
+*** TODO Get Cache
+*** TODO Get Time
+*** TODO Get Webhooks Queue
+*** TODO Get Logs Queue
+*** TODO Get Certificates Queue
+*** TODO Get Functions Queue
+*** TODO Get Local Storage
+*** TODO Get Antivirus
+
+* TODO Write a payload builder
+Writing basically the same line over and over when building JSON
+payloads is inefficient, see ~appwrite-storage-create-bucket~. There
+must be a way to make a macro to make the creation of payloads
+simpler.

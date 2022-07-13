@@ -83,44 +83,82 @@ If it does not contain an API version, prefix \"/v1\" by default."
               "/")
             api)))
 
+(defun appwrite--message-failure (message status json-message)
+  "Display MESSAGE followed by JSON-MESSAGE.
+This will show a message in the modeline in this format:
+
+    [status STATUS] MESSAGE: JSON-MESSAGE"
+  (message "[status %d] %s: %s" status message json-message))
+
+(defun appwrite--process-response (message success-status response)
+  "In case of failure when calling the Appwrite API, display MESSAGE.
+The function considers a call to the API a failure in case the
+HTTP status code in RESPONSE differs from SUCCESS-STATUS, the
+HTTP status code hoped for. If that’s the case, warn the user,
+see `appwrite--message-failure'. Else, return the JSON returned
+by the API."
+  (let ((status (car response))
+        (json (cdr response)))
+    (if (= status success-status)
+        json
+      (appwrite--message-failure message status (gethash "message" json)))))
+
 (cl-defun appwrite--query-api (&key (method "GET")
                                     api
-                                    data
+                                    payload
                                     (content-type "application/json")
-                                    data-alist-p
+                                    payload-alist-p
                                     asyncp
                                     callback)
-  "Perform a method METHOD to API with DATA as its payload.
+  "Perform a method METHOD to API with PAYLOAD as its payload.
 CONTENT-TYPE is whichever miime-type is being used.
 
-If CONTENT-TYPE is \"application/json\", DATA is subject ot
+If CONTENT-TYPE is \"application/json\", PAYLOAD is subject ot
 automatic conversion depending on its type.
-- If DATA passes `plistp', it will be converted to JSON as a
+- If PAYLOAD passes `plistp', it will be converted to JSON as a
   plist.
-- If DATA passes `hash-table-p', it will be converted to JSON as
-  a hash table.
-- If DATA-ALIST-P is t, DATA will be converted to JSON as an
+- If PAYLOAD passes `hash-table-p', it will be converted to JSON
+  as a hash table.
+- If PAYLOAD-ALIST-P is t, PAYLOAD will be converted to JSON as an
   associative table.
-- Else, DATA will be passed a string containing JSON.
+- Else, PAYLOAD will be passed a string containing JSON.
 
 If ASYNCP is t, `appwrite--post-api' will be asynchronous.
 CALLBACK must then be set as it will be called once the request
-finishes. See `url-retrieve'."
+finishes. See `url-retrieve'.
+
+The function returns a pair composed of the HTTP status code as
+its car. The cdr is a hash table from the response answer if
+Content-Type in the headers is \"application/json\"."
   (let* ((url (appwrite--get-full-url api))
          (url-request-method method)
          (url-request-extra-headers `(("X-Appwrite-key"     . ,appwrite-api-key)
                                       ("X-Appwrite-Project" . ,appwrite-project)
                                       ("Content-type"       . ,content-type)))
          (url-request-data (cond ((not (string= content-type "application/json"))
-                                  data)
-                                 ((plistp data)       (json-encode-plist data))
-                                 ((hash-table-p data) (json-encode data))
-                                 (data-alist-p        (json-encode-alist data))
-                                 (t                   data))))
+                                  payload)
+                                 ((plistp payload)       (json-encode-plist payload))
+                                 ((hash-table-p payload) (json-encode payload))
+                                 (payload-alist-p        (json-encode-alist payload))
+                                 (t                   payload))))
     (if asyncp
         (url-retrieve url callback)
       (with-current-buffer (url-retrieve-synchronously url)
-        (buffer-string)))))
+        (let (http-code json)
+          (message ";;;;;;;;;;;;")
+          (message "%s" (buffer-string))
+          (save-match-data
+            (goto-char (point-min))
+            (re-search-forward (rx bol "HTTP" (+ (not space)) " " (group (+ digit))))
+            (setq http-code (string-to-number
+                             (buffer-substring-no-properties (match-beginning 1)
+                                                             (match-end 1)))))
+          (when (re-search-forward "^Content-Type: application/json" nil t)
+            (goto-char (point-min))
+            (re-search-forward "^$")
+            (delete-region (point) (point-min))
+            (setq json (json-parse-buffer)))
+          `(,http-code . ,json))))))
 
 
 ;;; Account
@@ -170,25 +208,76 @@ larger than 20MB are skipped. t by default.
 
 If ANTIVIRUS is t, enable antivirus for the bucket. Files larger
 than 20MB are skipped. t by default."
-  (let ((data `(bucketId ,id name ,name permission ,permission)))
+  (let ((payload `(bucketId ,id name ,name permission ,permission)))
     (when read
-      (setq data (append data `(read ,read))))
+      (setq payload (append payload `(read ,read))))
     (when write
-      (setq data (append data `(write ,write))))
+      (setq payload (append payload `(write ,write))))
     (when maximum-file-size
-      (setq data (append data `(maximumFileSize ,maximum-file-size))))
+      (setq payload (append payload `(maximumFileSize ,maximum-file-size))))
     (when allowed-file-extensions
-      (setq data (append data `(allowedFileExtensions ,allowed-file-extensions))))
-    (setq data (append data `(enabled ,(if enabled t :json-false))))
-    (setq data (append data `(encryption ,(if encryption t :json-false))))
-    (setq data (append data `(antivirus ,(if antivirus t :json-false))))
-    ;; (json-encode-plist data)
-    (appwrite--query-api :method "POST" :api "storage/buckets" :data (json-encode-plist data))))
+      (setq payload (append payload `(allowedFileExtensions ,allowed-file-extensions))))
+    (setq payload (append payload `(enabled ,(if enabled t :json-false))))
+    (setq payload (append payload `(encryption ,(if encryption t :json-false))))
+    (setq payload (append payload `(antivirus ,(if antivirus t :json-false))))
+    ;; (json-encode-plist payload)
+    (let ((response (appwrite--query-api :method "POST"
+                                         :api "/v1/storage/buckets"
+                                         :payload (json-encode-plist payload))))
+      (appwrite--process-response (concat "Failed to create bucket " id)
+                                  201
+                                  response))))
+
+(cl-defun appwrite-storage-list-buckets (&key search (limit 25) offset cursor cursor-direction order-type)
+  "List of all storage buckets.
+
+SEARCH is a string to filter the list results when non-nil. Max
+length of 256 chars.
+
+LIMIT is the maximum amount of buckets returned by the
+query (default value: 25).
+
+OFFSET is the results offset with which the user can manage the
+pagination of the results when non-nil.
+
+CURSOR is the id of the bucket used as the starting point of the
+query, excluding the bucket itself.
+
+CURSOR-DIRECTION can be either \\='after or \\='before.
+
+ORDER-TYPE can be either \\='ascending or \\='descending.
+
+If the query is successful, return a hash table made from the
+acquired JSON. Otherwise, return nil and warn the user."
+  (let (payload)
+    (when search (setq payload (append payload `(search ,search))))
+    (setq payload (append payload `(limit ,limit)))
+    (when offset (setq payload (append payload `(offset ,offset))))
+    (when cursor (setq payload (append payload `(cursor ,cursor))))
+    (when cursor-direction (setq payload (append payload `(cursor-direction ,cursor-direction))))
+    (when order-type (setq payload (append payload `(order-type ,order-type))))
+    (let* ((response (appwrite--query-api :api "/v1/storage/buckets"
+                                          :payload (json-encode-plist payload)))
+           (status (car response))
+           (json (cdr response)))
+      (if (eq 200 status)
+          json
+        (appwrite--message-failure "Failed to list buckets" 200 (gethash "message" json))))))
+
+(defun appwrite-storage-get-bucket (id)
+  "Get bucket with id ID."
+  (let ((response (appwrite--query-api :api (concat "/v1/storage/buckets/" id))))
+    (appwrite--process-response (concat "Failed to get bucket " id)
+                                200
+                                response)))
 
 (defun appwrite-storage-delete-bucket (id)
   "Delete bucket with id ID."
-  (appwrite--query-api :method "DELETE"
-                       :api (concat "storage/buckets/" id)))
+  (let ((response (appwrite--query-api :method "DELETE"
+                                       :api (concat "/v1/storage/buckets/" id))))
+    (appwrite--process-response (concat "Failed to delete bucket " id)
+                                204
+                                response)))
 
 
 ;;; Functions
