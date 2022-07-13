@@ -117,7 +117,8 @@ the API."
                                     (content-type "application/json")
                                     payload-alist-p
                                     asyncp
-                                    callback)
+                                    callback
+                                    extra-headers)
   "Perform a method METHOD to API with PAYLOAD as its payload.
 CONTENT-TYPE is whichever miime-type is being used.
 
@@ -135,6 +136,9 @@ If ASYNCP is t, `appwrite--post-api' will be asynchronous.
 CALLBACK must then be set as it will be called once the request
 finishes.  See `url-retrieve'.
 
+EXTRA-HEADERS is a list of pairs to append to
+`url-request-extra-headers'.
+
 The function returns a pair composed of the HTTP status code as
 its car.  The cdr is a hash table from the response answer if
 Content-Type in the headers is \"application/json\"."
@@ -143,6 +147,10 @@ Content-Type in the headers is \"application/json\"."
          (url-request-extra-headers `(("X-Appwrite-key"     . ,appwrite-api-key)
                                       ("X-Appwrite-Project" . ,appwrite-project)
                                       ("Content-type"       . ,content-type)))
+         (url-request-extra-headers (if extra-headers
+                                        (append url-request-extra-headers
+                                                extra-headers)
+                                      url-request-extra-headers))
          (url-request-data (cond ((not (string= content-type "application/json"))
                                   payload)
                                  ((appwrite--plistp payload)
