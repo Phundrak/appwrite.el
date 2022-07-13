@@ -66,6 +66,15 @@ the internet, even if it’s a private repository.")
 
 ;;; Internal functions
 
+(defun appwrite--plistp (object)
+  "Non-nil if and only if OBJECT is a valid plist.
+Compatibility function for Emacs 27 and earlier, the code source
+in the else branch is the definition of `plistp' in Emacs 29."
+  (if (boundp #'plistp)
+      (plistp object)
+    (let ((len (proper-list-p object)))
+      (and len (zerop (% len 2))))))
+
 (defun appwrite--get-full-url (api)
   "Get the full url for API.
 If API does not begin with an initial forward slash, add it
@@ -115,8 +124,8 @@ CONTENT-TYPE is whichever miime-type is being used.
 
 If CONTENT-TYPE is \"application/json\", PAYLOAD is subject ot
 automatic conversion depending on its type.
-- If PAYLOAD passes `plistp', it will be converted to JSON as a
-  plist.
+- If PAYLOAD passes `appwrite--plistp', it will be converted to
+  JSON as a plist.
 - If PAYLOAD passes `hash-table-p', it will be converted to JSON
   as a hash table.
 - If PAYLOAD-ALIST-P is t, PAYLOAD will be converted to JSON as an
@@ -137,7 +146,8 @@ Content-Type in the headers is \"application/json\"."
                                       ("Content-type"       . ,content-type)))
          (url-request-data (cond ((not (string= content-type "application/json"))
                                   payload)
-                                 ((plistp payload)       (json-encode-plist payload))
+                                 ((appwrite--plistp payload)
+                                  (json-encode-plist payload))
                                  ((hash-table-p payload) (json-encode payload))
                                  (payload-alist-p        (json-encode-alist payload))
                                  (t                   payload))))
