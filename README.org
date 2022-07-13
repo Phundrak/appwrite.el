@@ -1,0 +1,46 @@
+#+title: appwrite.el
+#+author: Lucien Cartier-Tilet
+#+email: lucien@phundrak.com
+
+* Introduction
+~appwrite.el~ is a server SDK for [[https://appwrite.io/][Appwrite]], a self-hosted
+backend-as-a-service platform.
+
+* Table of Contents                                                :TOC_2_gh:
+- [[#introduction][Introduction]]
+- [[#installation][Installation]]
+  - [[#manual-installation][Manual Installation]]
+  - [[#straight--use-package][Straight + use-package]]
+- [[#customizing][Customizing]]
+- [[#contributing][Contributing]]
+- [[#license][License]]
+
+* Installation
+
+** Manual Installation
+To manually install ~appwrite.el~, clone the repository wherever you
+want, then put the path to the repository in your ~load-path~. You can
+then require it.
+#+begin_src emacs-lisp
+(add-to-list 'load-path "path/to/your/appwrite.el/")
+(require 'appwrite)
+#+end_src
+
+** Straight + use-package
+You can also let straight with use-package manage the git repository
+themselves. For that, you can use this as your minimal config for
+installing ~appwrite.el~:
+#+begin_src emacs-lisp
+(use-package appwrite
+  :straight (appwrite :git host
+                      :repo "https://labs.phundrak.com/phundrak/appwrite.el"))
+#+end_src
+
+* Customizing
+
+* Contributing
+See [[file:CONTRIBUTING.org]].
+
+* License
+~appwrite.el~ is available under the GNU GPL-3.0 license. You can find
+the full text in the [[file:LICENSE][LICENSE]] file.
