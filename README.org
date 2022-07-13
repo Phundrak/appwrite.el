@@ -1,6 +1,7 @@
 #+title: appwrite.el
 #+author: Lucien Cartier-Tilet
 #+email: lucien@phundrak.com
+[[https://github.com/Phundrak/appwrite.el/actions/workflows/test.yml][file:https://github.com/Phundrak/appwrite.el/actions/workflows/test.yml/badge.svg]]
 
 * Introduction
 ~appwrite.el~ is a server SDK for [[https://appwrite.io/][Appwrite]], a self-hosted
