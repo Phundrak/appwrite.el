@@ -1,4 +1,4 @@
-;;; appwrite.el --- Appwrite server SDK for Emacs  -*- lexical-binding: t; -*-
+;;; appwrite.el --- Appwrite server SDK  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Lucien Cartier-Tilet
 
@@ -6,8 +6,8 @@
 ;; Maintainer: Lucien Cartier-Tilet <lucien@phundrak.com>
 ;; URL: https://github.com/Phundrak/appwrite.el
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1"))
-;; Keywords: database emacs-lisp
+;; Package-Requires: ((emacs "27.1"))
+;; Keywords: extensions, lisp, database, appwrite, tools
 
 ;; This file is not part of GNU Emacs.
 

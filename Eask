@@ -1,12 +1,13 @@
+;; -*- mode: cask -*-
 (package "appwrite"
          "0.1.0"
-         "Appwrite server SDK for Emacs")
+         "Appwrite server SDK")
 
 (website-url "https://github.com/Phundrak/appwrite.el")
-(keywords "database" "emacs-lisp")
+(keywords "database" "extensions" "lisp" "tools" "appwrite")
 
 (package-file "appwrite.el")
 
 (source "gnu")
 
-(depends-on "emacs" "26.1")
+(depends-on "emacs" "27.1")
