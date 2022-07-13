@@ -88,7 +88,7 @@
 *** TODO Update Document
 *** TODO Delete Document
 
-** TODO Storage [5/13]
+** TODO Storage [7/13]
 *** DONE Create bucket
 CLOSED: [2022-07-13 Wed 14:28]
 *** DONE List buckets
@@ -100,8 +100,10 @@ CLOSED: [2022-07-13 Wed 16:35]
 *** DONE Delete Bucket
 CLOSED: [2022-07-13 Wed 14:28]
 *** TODO Create File
-*** TODO List Files
-*** TODO Get File
+*** DONE List Files
+CLOSED: [2022-07-13 Wed 18:30]
+*** DONE Get File
+CLOSED: [2022-07-13 Wed 18:50]
 *** TODO Get File Preview
 *** TODO Get File for Download
 *** TODO Get File for View

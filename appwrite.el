@@ -353,6 +353,74 @@ acquired JSON.  Otherwise, return nil and warn the user."
                                 204
                                 response)))
 
+(cl-defun appwrite-storage-create-file (bucket-id file-id file &key read write)
+  "Upload FILE in BUCKET-ID as FILE-ID.
+Additionally give the file extra READ or WRITE user permissions.
+
+TODO: implement file upload."
+  (let ((file (expand-file-name file)))
+    (unless (file-exists-p file)
+        (error "File does not exist: %s" file)
+      (let ((payload `(bucketId ,bucket-id fileId ,file-id file ,file)))
+        (when read (setq payload (append payload `(read ,read))))
+        (when write (setq payload (append payload `(write ,write))))
+        (json-encode-plist payload))))
+  (warn "The file upload part of `appwrite-storage-create-file' hasn't been implemented yet"))
+
+(cl-defun appwrite-storage-list-files (id &key search limit offset cursor cursor-direction order-type)
+  "List files in storage bucket ID.
+
+SEARCH is a term that can filter the list results.  Max length:
+256 chars.
+
+LIMIT is the maximum number of files to return.  Appwrite
+defaults to 25.
+
+OFFSET manages pagination in the search result.  Appwrite
+defaults to 0.
+
+CURSOR is the ID of the file used as the starting point for the
+query, excluding the file itself.
+
+CURSOR-DIRECTION can be either \\='after or \\='before.
+
+ORDER-TYPE can be either \\='ascending or \\='descending.
+
+If the query is successful, return a hash table made from the
+acquired JSON.  Otherwise, return nil and warn the user."
+  (let ((payload `(bucketId ,id)))
+    (when search (setq payload `(search ,search)))
+    (when limit (setq payload `(limit ,limit)))
+    (when offset (setq payload `(offset ,offset)))
+    (when cursor (setq payload `(cursor ,cursor)))
+    (when-let ((direction (pcase cursor-direction
+                            ('before "before")
+                            ('after "after")
+                            (_ nil))))
+      (setq payload (append payload `(cursorDirection ,direction))))
+    (when-let ((order (pcase order-type
+                        ('ascending "ASC")
+                        ('descending "DESC")
+                        (_ nil))))
+      (setq payload (append payload `(orderType ,order))))
+    (let ((response (appwrite--query-api :api (format "/v1/storage/buckets/%s/files"
+                                                      id)
+                                         :payload (json-encode-plist payload))))
+      (appwrite--process-response "Failed to list files" 200 response))))
+
+(defun appwrite-storage-get-file (bucket-id file-id)
+  "Retrieve a file object from a bucket.
+The bucket is determined by its id BUCKET-ID while the file is
+determined by its id FILE-ID.
+
+This does not download the file! For that, see
+`appwrite-storage-get-file-download'."
+  (let ((payload `(bucketId ,bucket-id fileId ,file-id)))
+    (appwrite--query-api :api (format "/v1/storage/buckets/%s/files/%s"
+                                      bucket-id
+                                      file-id)
+                         :payload (json-encode-plist payload))))
+
 
 ;;; Functions
 
