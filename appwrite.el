@@ -184,15 +184,18 @@ Content-Type in the headers is \"application/json\"."
 
 ;;; Storage
 
-(cl-defun appwrite-storage-create-bucket (id
-                                          name
-                                          &key
-                                          (permission "bucket")
-                                          read write (enabled t)
-                                          maximum-file-size allowed-file-extensions
-                                          (encryption t) (antivirus t))
-  "Create bucket.
-Create bucket named NAME with id ID.
+(cl-defun appwrite--storage-update-bucket (id
+                                           name
+                                           &key
+                                           updatep
+                                           (permission "bucket")
+                                           read write (enabled t)
+                                           maximum-file-size allowed-file-extensions
+                                           (encryption t) (antivirus t))
+  "Create or update a storage bucket.
+Create or update a storage bucket named NAME with id ID.
+
+If UPDATEP is t, update the bucket, else create it.
 
 PERMISSION is the permissioin type model to use for reading files
 in this bucket.  By default, PERMISSION is \"bucket\". For more
@@ -217,7 +220,8 @@ larger than 20MB are skipped. t by default.
 
 If ANTIVIRUS is t, enable antivirus for the bucket. Files larger
 than 20MB are skipped. t by default."
-  (let ((payload `(bucketId ,id name ,name permission ,permission)))
+  (let ((payload `(bucketId ,id name ,name permission ,permission))
+        (method (if updatep "PUT" "POST")))
     (when read
       (setq payload (append payload `(read ,read))))
     (when write
@@ -230,12 +234,61 @@ than 20MB are skipped. t by default."
     (setq payload (append payload `(encryption ,(if encryption t :json-false))))
     (setq payload (append payload `(antivirus ,(if antivirus t :json-false))))
     ;; (json-encode-plist payload)
-    (let ((response (appwrite--query-api :method "POST"
-                                         :api "/v1/storage/buckets"
+    (let ((response (appwrite--query-api :method method
+                                         :api (concat "/v1/storage/buckets/"
+                                                      (if updatep id ""))
                                          :payload (json-encode-plist payload))))
-      (appwrite--process-response (concat "Failed to create bucket " id)
-                                  201
+      (appwrite--process-response (format "Failed to %s bucket %s"
+                                          (if updatep "update" "create")
+                                          id)
+                                  (if updatep 200 201)
                                   response))))
+
+(cl-defun appwrite-storage-create-bucket (id
+                                          name
+                                          &key
+                                          (permission "bucket")
+                                          read write (enabled t)
+                                          maximum-file-size allowed-file-extensions
+                                          (encryption t) (antivirus t))
+  "Create storage bucket.
+For documentation on ID, NAME, PERMISSION, READ, WRITE, ENABLED,
+MAXIMUM-FILE-SIZE, ALLOWED-FILE-EXTENSIONS, ENCRYPTION, and
+ANTIVIRUS, check `appwrite--storage-update-bucket'."
+  (appwrite--storage-update-bucket id
+                                   name
+                                   :updatep nil
+                                   :permission permission
+                                   :read read
+                                   :write write
+                                   :enabled enabled
+                                   :maximum-file-size maximum-file-size
+                                   :allowed-file-extensions allowed-file-extensions
+                                   :encryption encryption
+                                   :antivirus antivirus))
+
+(cl-defun appwrite-storage-update-bucket (id
+                                          name
+                                          &key
+                                          (permission "bucket")
+                                          read write (enabled t)
+                                          maximum-file-size allowed-file-extensions
+                                          (encryption t) (antivirus t))
+  "Create storage bucket.
+For documentation on ID, NAME, PERMISSION, READ, WRITE, ENABLED,
+MAXIMUM-FILE-SIZE, ALLOWED-FILE-EXTENSIONS, ENCRYPTION, and
+ANTIVIRUS, check `appwrite--storage-update-bucket'."
+  (appwrite--storage-update-bucket id
+                                   name
+                                   :updatep t
+                                   :permission permission
+                                   :read read
+                                   :write write
+                                   :enabled enabled
+                                   :maximum-file-size maximum-file-size
+                                   :allowed-file-extensions allowed-file-extensions
+                                   :encryption encryption
+                                   :antivirus antivirus))
 
 (cl-defun appwrite-storage-list-buckets (&key search (limit 25) offset cursor cursor-direction order-type)
   "List of all storage buckets.

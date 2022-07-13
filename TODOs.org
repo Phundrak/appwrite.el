@@ -1,3 +1,5 @@
+#+startup: overview
+
 * TODO Implement API [0/8]
 ** TODO Accounts [0/20]
 *** TODO Get Account
@@ -86,14 +88,15 @@
 *** TODO Update Document
 *** TODO Delete Document
 
-** TODO Storage [4/13]
+** TODO Storage [5/13]
 *** DONE Create bucket
 CLOSED: [2022-07-13 Wed 14:28]
 *** DONE List buckets
 CLOSED: [2022-07-13 Wed 15:33]
 *** DONE Get Bucket
 CLOSED: [2022-07-13 Wed 15:34]
-*** TODO Update Bucket
+*** DONE Update Bucket
+CLOSED: [2022-07-13 Wed 16:35]
 *** DONE Delete Bucket
 CLOSED: [2022-07-13 Wed 14:28]
 *** TODO Create File
