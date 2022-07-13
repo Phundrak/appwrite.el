@@ -324,15 +324,19 @@ acquired JSON.  Otherwise, return nil and warn the user."
     (setq payload (append payload `(limit ,limit)))
     (when offset (setq payload (append payload `(offset ,offset))))
     (when cursor (setq payload (append payload `(cursor ,cursor))))
-    (when cursor-direction (setq payload (append payload `(cursor-direction ,cursor-direction))))
-    (when order-type (setq payload (append payload `(order-type ,order-type))))
-    (let* ((response (appwrite--query-api :api "/v1/storage/buckets"
-                                          :payload (json-encode-plist payload)))
-           (status (car response))
-           (json (cdr response)))
-      (if (eq 200 status)
-          json
-        (appwrite--message-failure "Failed to list buckets" 200 (gethash "message" json))))))
+    (when-let ((direction (pcase cursor-direction
+                            ('before "before")
+                            ('after "after")
+                            (_ nil))))
+      (setq payload (append payload `(cursorDirection ,direction))))
+    (when-let ((order (pcase order-type
+                        ('ascending "ASC")
+                        ('descending "DESC")
+                        (_ nil))))
+      (setq payload (append payload `(orderType ,order))))
+    (let ((response (appwrite--query-api :api "/v1/storage/buckets"
+                                         :payload (json-encode-plist payload))))
+      (appwrite--process-response "Failed to list buckets" 200 response))))
 
 (defun appwrite-storage-get-bucket (id)
   "Get bucket with id ID."
