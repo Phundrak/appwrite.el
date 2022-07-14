@@ -21,7 +21,9 @@ backend-as-a-service platform.
 ~appwrite.el~ is currently in its infancy, so don’t expect yet most of
 the functionalities to be available. If you want to see a detailed
 view of the parity between this library and the server API, check out
-the [[file:TODOs.org][TODOs]] file in this repository.
+the [[https://github.com/Phundrak/appwrite.el/blob/main/TODOs.org][TODOs]] file in this repository (Github’s parsing of org-mode files
+isn’t great, either read it raw, on [[https://labs.phundrak.com/phundrak/appwrite.el/src/branch/main/TODOs.org][my Gitea mirror]], or directly in
+Emacs).
 
 * Installation
 ** Manual Installation
